@@ -9,4 +9,4 @@ const bookSchema = mongoose.Schema({
     quantity: Number
 });
 
-export default mongoose.model('book', bookSchema)
+export default mongoose.model('book', bookSchema);

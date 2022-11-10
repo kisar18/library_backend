@@ -29,7 +29,7 @@ userSchema.statics.register = async function (first_name, last_name, birth_numbe
   const user = await this.create({ first_name, last_name, birth_number, address, username, password: hash });
 
   return user;
-}
+};
 
 // Static login method
 userSchema.statics.login = async function (username, password) {
@@ -46,11 +46,11 @@ userSchema.statics.login = async function (username, password) {
 
   const match = await bcrypt.compare(password, user.password);
 
-  if(!match) {
+  if (!match) {
     throw Error("Incorrect password");
   }
 
   return user;
-}
+};
 
-export default mongoose.model('user', userSchema)
+export default mongoose.model('user', userSchema);

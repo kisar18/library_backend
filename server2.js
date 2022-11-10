@@ -6,8 +6,8 @@ import userRoutes from "./routes/users.js";
 
 // App config
 const app = express();
-const port = process.env.PORT || 8001
-const connection_url = "mongodb+srv://librarian:admin@pdproject.zkvldhb.mongodb.net/pdProject"
+const port = process.env.PORT || 8001;
+const connection_url = "mongodb+srv://librarian:admin@pdproject.zkvldhb.mongodb.net/pdProject";
 
 // Middleware
 app.use(express.json());
@@ -25,4 +25,4 @@ mongoose.connect(connection_url, {
 app.get('/', (req, res) => res.status(200).send("Hello world"));
 
 // Listener
-app.listen(port, () => console.log(`Listening on port: ${port}`))
+app.listen(port, () => console.log(`Listening on port: ${port}`));
