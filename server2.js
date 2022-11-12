@@ -3,11 +3,13 @@ import mongoose from "mongoose";
 import cors from "cors";
 import bookRoutes from "./routes/books.js";
 import userRoutes from "./routes/users.js";
+import dotenv from "dotenv";
 
 // App config
+dotenv.config();
 const app = express();
-const port = process.env.PORT || 8001;
-const connection_url = "mongodb+srv://librarian:admin@pdproject.zkvldhb.mongodb.net/pdProject";
+const port = process.env.PORT;
+const connection_url = process.env.URI;
 
 // Middleware
 app.use(express.json());
