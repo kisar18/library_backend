@@ -3,7 +3,7 @@ import Book from "../models/bookModel.js";
 
 // Get all books
 const getBooks = async (req, res) => {
-  const books = await Book.find({}).sort({ createdAt: -1 });
+  const books = await Book.find({});
 
   res.status(200).json(books);
 };

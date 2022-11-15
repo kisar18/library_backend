@@ -62,12 +62,11 @@ userSchema.statics.login = async function (username, password) {
 };
 
 userSchema.statics.borrow = async function (username, _id) {
-  mongoose.set('debug', true);
 
   const user = await this.findOne({ username });
   const book = await Book.findById({ _id });
 
-  user.books.push({
+  await user.books.push({
     name: book.name,
     author: book.author,
     pages: book.pages,
@@ -76,6 +75,8 @@ userSchema.statics.borrow = async function (username, _id) {
   });
 
   await user.save();
+
+  return user;
 };
 
 export default mongoose.model('user', userSchema);

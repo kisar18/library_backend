@@ -1,10 +1,22 @@
 import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
-import Book from "../models/bookModel.js";
 
 // JWT
 const createToken = (_id) => {
   return jwt.sign({ _id }, process.env.SECRET, { expiresIn: '3d' });
+};
+
+// Get current user
+const getUser = async (req, res) => {
+  const { username } = req.params;
+
+  const user = await User.findOne(username);
+
+  if (!user) {
+    return res.status(404).json({ error: "No such a user" });
+  }
+
+  res.status(200).json(user);
 };
 
 // Login user
@@ -54,5 +66,5 @@ const borrow = async (req, res) => {
 };
 
 export default {
-  loginUser, registerUser, borrow
+  getUser, loginUser, registerUser, borrow
 };
