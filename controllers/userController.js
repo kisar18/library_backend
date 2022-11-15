@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
+import Book from "../models/bookModel.js";
 
 // JWT
 const createToken = (_id) => {
@@ -39,6 +40,19 @@ const registerUser = async (req, res) => {
   }
 };
 
+// Borrow a book
+const borrow = async (req, res) => {
+  const { username, _id } = req.body;
+
+  try {
+    const user = await User.borrow(username, _id);
+
+    res.status(200).json({ user });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 export default {
-  loginUser, registerUser
+  loginUser, registerUser, borrow
 };

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import Book from "./bookModel.js";
 
 const userSchema = mongoose.Schema({
   first_name: String,
@@ -7,7 +8,14 @@ const userSchema = mongoose.Schema({
   birth_number: Number,
   address: String,
   username: String,
-  password: String
+  password: String,
+  books: [{
+    name: String,
+    author: String,
+    pages: Number,
+    publication_year: Number,
+    image: String,
+  }]
 });
 
 // Static register method
@@ -51,6 +59,23 @@ userSchema.statics.login = async function (username, password) {
   }
 
   return user;
+};
+
+userSchema.statics.borrow = async function (username, _id) {
+  mongoose.set('debug', true);
+
+  const user = await this.findOne({ username });
+  const book = await Book.findById({ _id });
+
+  user.books.push({
+    name: book.name,
+    author: book.author,
+    pages: book.pages,
+    publication_year: book.publication_year,
+    image: book.image
+  });
+
+  await user.save();
 };
 
 export default mongoose.model('user', userSchema);

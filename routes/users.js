@@ -9,4 +9,7 @@ router.post("/login", userController.loginUser);
 // Register
 router.post("/register", userController.registerUser);
 
+// Get
+router.post("/borrow", userController.borrow);
+
 export default router;
