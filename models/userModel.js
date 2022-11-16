@@ -66,6 +66,10 @@ userSchema.statics.borrow = async function (username, _id) {
   const user = await this.findOne({ username });
   const book = await Book.findById({ _id });
 
+  if (book.quantity === 0) {
+    throw Error("This book is no available right now");
+  }
+
   for (let i = 0; i < user.books.length; i++) {
     if (user.books[i].name === book.name) {
       throw Error("You already borrowed this book");
@@ -80,7 +84,10 @@ userSchema.statics.borrow = async function (username, _id) {
     image: book.image
   });
 
+  book.quantity = book.quantity - 1;
+
   await user.save();
+  await book.save();
 
   return user;
 };
@@ -107,8 +114,11 @@ userSchema.statics.returnBook = async function (username, name) {
   }
 
   if (bookToReturn) {
+    bookInCatalogue.quantity = bookInCatalogue.quantity + 1;
+
     await user.books.remove(bookToReturn);
     await user.save();
+    await bookInCatalogue.save();
   }
 
   return user;
