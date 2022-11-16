@@ -15,4 +15,7 @@ router.post("/register", userController.registerUser);
 // Borrow a book
 router.post("/borrow", userController.borrow);
 
+// Return a book
+router.post("/returnBook", userController.returnBook);
+
 export default router;

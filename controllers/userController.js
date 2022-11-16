@@ -65,6 +65,19 @@ const borrow = async (req, res) => {
   }
 };
 
+// Return a book
+const returnBook = async (req, res) => {
+  const { username, name } = req.body;
+
+  try {
+    const user = await User.returnBook(username, name);
+
+    res.status(200).json({ user });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 export default {
-  getUser, loginUser, registerUser, borrow
+  getUser, loginUser, registerUser, borrow, returnBook
 };

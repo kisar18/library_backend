@@ -85,4 +85,33 @@ userSchema.statics.borrow = async function (username, _id) {
   return user;
 };
 
+userSchema.statics.returnBook = async function (username, name) {
+  const user = await this.findOne({ username });
+
+  const bookInCatalogue = await Book.findOne({ name });
+
+  var bookToReturn;
+
+  if (!bookInCatalogue) {
+    throw Error("Cant find the book in catalogue");
+  }
+
+  for (let i = 0; i < user.books.length; i++) {
+    if (bookInCatalogue.name === user.books[i].name) {
+      bookToReturn = user.books[i];
+    }
+  }
+
+  if (!bookToReturn) {
+    throw Error("Cannot find the book in your borrows");
+  }
+
+  if (bookToReturn) {
+    await user.books.remove(bookToReturn);
+    await user.save();
+  }
+
+  return user;
+};
+
 export default mongoose.model('user', userSchema);
