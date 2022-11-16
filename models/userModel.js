@@ -15,7 +15,7 @@ const userSchema = mongoose.Schema({
     pages: Number,
     publication_year: Number,
     image: String,
-  }]
+  }, { _id: false }]
 });
 
 // Static register method
@@ -65,6 +65,12 @@ userSchema.statics.borrow = async function (username, _id) {
 
   const user = await this.findOne({ username });
   const book = await Book.findById({ _id });
+
+  for (let i = 0; i < user.books.length; i++) {
+    if (user.books[i].name === book.name) {
+      throw Error("You already borrowed this book");
+    }
+  }
 
   await user.books.push({
     name: book.name,
