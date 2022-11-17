@@ -1,11 +1,21 @@
 import mongoose from "mongoose";
 import Book from "../models/bookModel.js";
 
-// Get all books
+// Get all books with pagination
 const getBooks = async (req, res) => {
-  const books = await Book.find({});
 
-  res.status(200).json(books);
+  try {
+    const PAGESIZE = 5;
+    const page = parseInt(req.query.page) || "0";
+    const total = await Book.countDocuments({});
+
+    const books = await Book.find({}).limit(PAGESIZE).skip(PAGESIZE * page);
+
+    res.status(200).json({ total, books });
+  }
+  catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
 
 // Get a single book

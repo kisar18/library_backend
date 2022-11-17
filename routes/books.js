@@ -5,11 +5,11 @@ import requireAuth from "../middleware/requireAuth.js";
 const router = express.Router();
 
 // Require auth for all books routes
-router.use(requireAuth);
+//router.use(requireAuth);
 
 // GET all books
 router.get("/", bookController.getBooks);
-
+/*
 // GET a single book
 router.get("/:id", bookController.getBook);
 
@@ -21,5 +21,5 @@ router.patch("/", bookController.updateBook);
 
 // DELETE a book
 router.delete("/", bookController.deleteBook);
-
+*/
 export default router;
