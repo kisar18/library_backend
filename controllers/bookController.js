@@ -5,11 +5,20 @@ import Book from "../models/bookModel.js";
 const getBooks = async (req, res) => {
 
   try {
+    const q = req.query.q;
+
+    const search = q ? {
+      "$or": [
+        { name: { $regex: q, $options: "$i" } },
+        { author: { $regex: q, $options: "$i" } }
+      ]
+    } : {};
+
     const PAGESIZE = 5;
     const page = parseInt(req.query.page) || "0";
-    const total = await Book.countDocuments({});
 
-    const books = await Book.find({}).limit(PAGESIZE).skip(PAGESIZE * page);
+    const books = await Book.find(search).limit(PAGESIZE).skip(PAGESIZE * page);
+    const total = (await Book.find(search)).length;
 
     res.status(200).json({ total, books });
   }
