@@ -9,7 +9,6 @@ const router = express.Router();
 
 // GET all books
 router.get("/", bookController.getBooks);
-/*
 // GET a single book
 router.get("/:id", bookController.getBook);
 
@@ -17,9 +16,9 @@ router.get("/:id", bookController.getBook);
 router.post("/", bookController.createBook);
 
 // UPDATE a book
-router.patch("/", bookController.updateBook);
+router.patch("/:id", bookController.updateBook);
 
 // DELETE a book
-router.delete("/", bookController.deleteBook);
-*/
+router.delete("/:id", bookController.deleteBook);
+
 export default router;

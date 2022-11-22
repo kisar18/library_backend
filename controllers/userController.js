@@ -6,17 +6,48 @@ const createToken = (_id) => {
   return jwt.sign({ _id }, process.env.SECRET, { expiresIn: '3d' });
 };
 
+// Get all users
+const getUsers = async (req, res) => {
+  try {
+    const q = req.query.q;
+
+    const search = q ? {
+      "$or": [
+        { username: { $regex: q, $options: "$i" } },
+        { first_name: { $regex: q, $options: "$i" } },
+        { last_name: { $regex: q, $options: "$i" } }
+      ]
+    } : {};
+
+    const PAGESIZE = 5;
+    const page = parseInt(req.query.page) || "0";
+
+    const users = await User.find(search).limit(PAGESIZE).skip(PAGESIZE * page);
+    const total = (await User.find(search)).length;
+    res.status(200).json({ total, users });
+  }
+  catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 // Get current user
 const getUser = async (req, res) => {
   const { username } = req.params;
 
-  const user = await User.findOne(username);
+  try {
+    const user = await User.findOne({ username });
 
-  if (!user) {
-    return res.status(404).json({ error: "No such a user" });
+    if (!user) {
+      return res.status(404).json({ error: "No such a user" });
+    }
+
+    res.status(200).json(user);
+  }
+  catch (error) {
+    res.status(400).json({ error: error.message });
   }
 
-  res.status(200).json(user);
 };
 
 // Login user
@@ -79,5 +110,5 @@ const returnBook = async (req, res) => {
 };
 
 export default {
-  getUser, loginUser, registerUser, borrow, returnBook
+  getUsers, getUser, loginUser, registerUser, borrow, returnBook
 };
