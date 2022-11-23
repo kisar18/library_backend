@@ -15,6 +15,9 @@ router.post("/login", userController.loginUser);
 // Register
 router.post("/register", userController.registerUser);
 
+// UPDATE a user
+router.patch("/:id", userController.updateUser);
+
 // Borrow a book
 router.post("/borrow", userController.borrow);
 

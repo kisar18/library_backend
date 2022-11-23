@@ -9,19 +9,20 @@ const userSchema = mongoose.Schema({
   address: String,
   username: String,
   password: String,
+  banned: Boolean,
   books: [{
     name: String,
     author: String,
     pages: Number,
     publication_year: Number,
     image: String,
-  }, { _id: false }]
+  }]
 });
 
 // Static register method
 userSchema.statics.register = async function (first_name, last_name, birth_number, address, username, password) {
 
-  if (!username || !password) {
+  if (!username || !password || !first_name || !last_name || !birth_number || !address) {
     throw Error("All fields must be filled");
   }
 
@@ -34,7 +35,7 @@ userSchema.statics.register = async function (first_name, last_name, birth_numbe
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
 
-  const user = await this.create({ first_name, last_name, birth_number, address, username, password: hash });
+  const user = await this.create({ first_name, last_name, birth_number, address, username, password: hash, banned: false });
 
   return user;
 };
@@ -50,6 +51,10 @@ userSchema.statics.login = async function (username, password) {
 
   if (!user) {
     throw Error("Incorrect username");
+  }
+
+  if (user.banned) {
+    throw Error(`User ${user.username} is banned`);
   }
 
   const match = await bcrypt.compare(password, user.password);

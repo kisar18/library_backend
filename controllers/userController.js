@@ -83,6 +83,25 @@ const registerUser = async (req, res) => {
   }
 };
 
+// Update a user
+const updateUser = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: 'No such user' });
+  }
+
+  const user = await User.findOneAndUpdate({ _id: id }, {
+    ...req.body
+  });
+
+  if (!user) {
+    return res.status(400).json({ error: 'No such book' });
+  }
+
+  res.status(200).json(user);
+};
+
 // Borrow a book
 const borrow = async (req, res) => {
   const { username, _id } = req.body;
@@ -110,5 +129,5 @@ const returnBook = async (req, res) => {
 };
 
 export default {
-  getUsers, getUser, loginUser, registerUser, borrow, returnBook
+  getUsers, getUser, loginUser, registerUser, updateUser, borrow, returnBook
 };

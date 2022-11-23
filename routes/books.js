@@ -5,10 +5,11 @@ import requireAuth from "../middleware/requireAuth.js";
 const router = express.Router();
 
 // Require auth for all books routes
-//router.use(requireAuth);
+router.use(requireAuth);
 
 // GET all books
 router.get("/", bookController.getBooks);
+
 // GET a single book
 router.get("/:id", bookController.getBook);
 
