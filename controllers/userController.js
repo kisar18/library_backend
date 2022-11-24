@@ -1,4 +1,5 @@
 import User from "../models/userModel.js";
+import Book from "../models/bookModel.js";
 import jwt from "jsonwebtoken";
 
 // JWT
@@ -42,7 +43,18 @@ const getUser = async (req, res) => {
       return res.status(404).json({ error: "No such a user" });
     }
 
-    res.status(200).json(user);
+    const PAGESIZE = 5;
+    const page = parseInt(req.query.page) || "0";
+    const total = await user.books.length;
+
+    let books = [null * total];
+    for (let i = (PAGESIZE * page); i < PAGESIZE - (PAGESIZE - (total % PAGESIZE)); i++) {
+      books[i] = user.books[i];
+    }
+
+    //const books = await user.books.limit(PAGESIZE).skip(PAGESIZE * page);
+
+    res.status(200).json({ user, books, total });
   }
   catch (error) {
     res.status(400).json({ error: error.message });
@@ -109,7 +121,12 @@ const borrow = async (req, res) => {
   try {
     const user = await User.borrow(username, _id);
 
-    res.status(200).json({ user });
+    const PAGESIZE = 5;
+    const page = parseInt(req.query.page) || "0";
+
+    const books = await Book.find({}).limit(PAGESIZE).skip(PAGESIZE * page);
+
+    res.status(200).json({ user, books });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -120,9 +137,9 @@ const returnBook = async (req, res) => {
   const { username, name } = req.body;
 
   try {
-    const user = await User.returnBook(username, name);
+    const userBooks = await User.returnBook(username, name);
 
-    res.status(200).json({ user });
+    res.status(200).json({ userBooks });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

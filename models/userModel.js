@@ -126,7 +126,7 @@ userSchema.statics.returnBook = async function (username, name) {
     await bookInCatalogue.save();
   }
 
-  return user;
+  return user.books;
 };
 
 export default mongoose.model('user', userSchema);
