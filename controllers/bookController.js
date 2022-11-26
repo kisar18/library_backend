@@ -56,11 +56,11 @@ const createBook = async (req, res) => {
   if (!author) {
     emptyFields.push('author');
   }
-  if (!pages) {
-    emptyFields.push('pages');
-  }
   if (!publication_year) {
     emptyFields.push('publication_year');
+  }
+  if (!pages) {
+    emptyFields.push('pages');
   }
   if (!image) {
     emptyFields.push('image');
@@ -69,11 +69,11 @@ const createBook = async (req, res) => {
     emptyFields.push('quantity');
   }
   if (emptyFields.length > 0) {
-    return res.status(400).json({ error: 'Please fill in all the fields', emptyFields });
+    return res.status(400).json({ error: 'Please fill in all the fields', emptyFields, name });
   }
 
   try {
-    const book = await Book.create({ name, author, pages, publication_year, image, quantity });
+    const book = await Book.create({ name, author, publication_year, pages, image, quantity });
     res.status(200).json(book);
   }
   catch (error) {
