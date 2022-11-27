@@ -20,12 +20,12 @@ const getUsers = async (req, res) => {
       ]
     } : {};
 
-    const PAGESIZE = 5;
+    const PAGESIZE = parseInt(req.query.ps) || "5";
     const page = parseInt(req.query.page) || "0";
 
     const users = await User.find(search).limit(PAGESIZE).skip(PAGESIZE * page);
     const total = (await User.find(search)).length;
-    res.status(200).json({ total, users });
+    res.status(200).json({ PAGESIZE, total, users });
   }
   catch (error) {
     res.status(400).json({ error: error.message });

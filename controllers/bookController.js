@@ -14,13 +14,13 @@ const getBooks = async (req, res) => {
       ]
     } : {};
 
-    const PAGESIZE = 5;
+    const PAGESIZE = parseInt(req.query.ps) || "5";
     const page = parseInt(req.query.page) || "0";
 
     const books = await Book.find(search).limit(PAGESIZE).skip(PAGESIZE * page);
     const total = (await Book.find(search)).length;
 
-    res.status(200).json({ total, books });
+    res.status(200).json({ PAGESIZE, total, books });
   }
   catch (error) {
     res.status(400).json({ error: error.message });
