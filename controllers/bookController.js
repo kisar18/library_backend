@@ -105,13 +105,13 @@ const deleteBook = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: 'No such book' });
+    return res.status(404).json({ error: 'No such book', id });
   }
 
   const book = await Book.findOneAndDelete({ _id: id });
 
   if (!book) {
-    return res.status(400).json({ error: 'No such book' });
+    return res.status(400).json({ error: 'No such book', id });
   }
 
   res.status(200).json(book);
