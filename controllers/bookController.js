@@ -86,19 +86,45 @@ const createBook = async (req, res) => {
 const updateBook = async (req, res) => {
   const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: 'No such book' });
+  try {
+    const users = await User.find({ 'books.0': { $exists: true } });
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: 'No such book', id });
+    }
+
+    const book = await Book.findOneAndUpdate({ _id: id }, {
+      ...req.body
+    }, { new: true });
+
+    if (!book) {
+      return res.status(400).json({ error: 'No such book', id });
+    }
+
+    const bookName = book.name;
+    var userHasThisBook = false;
+    var bName;
+
+    for (let i = 0; i < users.length; i++) {
+      for (let j = 0; j < users[i].books.length; j++) {
+        bName = users[i].books[j].name;
+        if (bookName === users[i].books[j].name) {
+          users[i].books[j] = book;
+          userHasThisBook = true;
+        }
+      }
+
+      if (userHasThisBook) {
+        await users[i].save();
+        userHasThisBook = false;
+      }
+    }
+
+    res.status(200).json(book);
   }
-
-  const book = await Book.findOneAndUpdate({ _id: id }, {
-    ...req.body
-  });
-
-  if (!book) {
-    return res.status(400).json({ error: 'No such book' });
+  catch (error) {
+    res.status(400).json({ error: error.message });
   }
-
-  res.status(200).json(book);
 };
 
 // Delete a book
@@ -113,7 +139,6 @@ const deleteBook = async (req, res) => {
     }
 
     const book = await Book.findOneAndDelete({ _id: id });
-    //const book = await Book.findOne({ _id: id });
 
     if (!book) {
       return res.status(400).json({ error: 'No such book', id });
