@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Book from "../models/bookModel.js";
+import User from "../models/userModel.js";
 
 // Get all books with pagination
 const getBooks = async (req, res) => {
@@ -104,17 +105,41 @@ const updateBook = async (req, res) => {
 const deleteBook = async (req, res) => {
   const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: 'No such book', id });
+  try {
+    const users = await User.find({ 'books.0': { $exists: true } });
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: 'No such book', id });
+    }
+
+    const book = await Book.findOneAndDelete({ _id: id });
+    //const book = await Book.findOne({ _id: id });
+
+    if (!book) {
+      return res.status(400).json({ error: 'No such book', id });
+    }
+
+    const bookName = book.name;
+
+    var bookToReturn;
+    for (let i = 0; i < users.length; i++) {
+      for (let j = 0; j < users[i].books.length; j++) {
+        if (bookName === users[i].books[j].name) {
+          bookToReturn = users[i].books[j];
+        }
+      }
+
+      if (bookToReturn) {
+        await users[i].books.remove(bookToReturn);
+        await users[i].save();
+      }
+    }
+
+    res.status(200).json(book);
   }
-
-  const book = await Book.findOneAndDelete({ _id: id });
-
-  if (!book) {
-    return res.status(400).json({ error: 'No such book', id });
+  catch (error) {
+    res.status(400).json({ error: error.message });
   }
-
-  res.status(200).json(book);
 };
 
 
