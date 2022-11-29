@@ -101,6 +101,10 @@ const updateBook = async (req, res) => {
       return res.status(400).json({ error: 'No such book', id });
     }
 
+    if (book.quantity < 0) {
+      return res.status(400).json({ error: "It is not possible to set book quantity to negative number" });
+    }
+
     const bookName = book.name;
     var userHasThisBook = false;
     var bName;

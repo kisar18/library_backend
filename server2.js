@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import bookRoutes from "./routes/books.js";
 import userRoutes from "./routes/users.js";
+import historyRoutes from "./routes/history.js";
 import dotenv from "dotenv";
 
 // App config
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(cors());
 app.use("/books", bookRoutes);
 app.use("/user", userRoutes);
+app.use("/histories", historyRoutes);
 
 // DB config
 mongoose.connect(connection_url, {
