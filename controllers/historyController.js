@@ -1,4 +1,5 @@
 import History from "../models/historyModel.js";
+import Book from "../models/bookModel.js";
 
 // Get history of borrows
 const getHistory = async (req, res) => {
@@ -27,10 +28,13 @@ const getHistory = async (req, res) => {
 
 // Update history of borrows
 const createHistoryItem = async (req, res) => {
-  const { user, book } = req.body;
+  const { user, bookId } = req.body;
 
   try {
-    const historyItem = await History.create({ user, book });
+    const book = await Book.findById(bookId);
+    const bookName = book.name;
+
+    const historyItem = await History.create({ user, book: bookName });
     res.status(200).json(historyItem);
   }
   catch (error) {
