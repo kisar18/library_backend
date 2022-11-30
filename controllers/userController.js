@@ -126,6 +126,20 @@ const returnBook = async (req, res) => {
   }
 };
 
+// Verify user
+const updateUserStatus = async (req, res) => {
+  const { username, newStatus } = req.body;
+
+  try {
+    const user = await User.updateUserStatus(username, newStatus);
+
+    res.status(200).json(user);
+  }
+  catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 export default {
-  getUsers, getUser, loginUser, registerUser, borrow, returnBook
+  getUsers, getUser, loginUser, registerUser, borrow, returnBook, updateUserStatus
 };

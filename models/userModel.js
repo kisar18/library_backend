@@ -9,7 +9,7 @@ const userSchema = mongoose.Schema({
   address: String,
   username: String,
   password: String,
-  banned: Boolean,
+  account_status: String,
   books: [{
     name: String,
     author: String,
@@ -35,7 +35,15 @@ userSchema.statics.register = async function (first_name, last_name, birth_numbe
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
 
-  const user = await this.create({ first_name, last_name, birth_number, address, username, password: hash, banned: false });
+  const user = await this.create({
+    first_name,
+    last_name,
+    birth_number,
+    address,
+    username,
+    password: hash,
+    account_status: "waiting"
+  });
 
   return user;
 };
@@ -53,8 +61,12 @@ userSchema.statics.login = async function (username, password) {
     throw Error("Incorrect username");
   }
 
-  if (user.banned) {
-    throw Error(`User ${user.username} is banned`);
+  if (user.account_status === "waiting") {
+    throw Error(`Account ${user.username} is waiting for verification by admin`);
+  }
+
+  if (user.account_status === "banned") {
+    throw Error(`Account ${user.username} is banned`);
   }
 
   const match = await bcrypt.compare(password, user.password);
@@ -131,6 +143,39 @@ userSchema.statics.returnBook = async function (username, name) {
   }
 
   return user.books;
+};
+
+userSchema.statics.updateUserStatus = async function (username, newStatus) {
+  const user = await this.findOne({ username });
+
+  if (!user) {
+    throw Error("Incorrect username");
+  }
+
+  if (user.account_status === newStatus) {
+    throw Error(`This user is already ${newStatus}`);
+  }
+
+  if (user.account_status === "waiting" && newStatus === "banned") {
+    throw Error("This user cant be banned because the account is not verified");
+  }
+
+  if (user.account_status === "waiting" && newStatus === "unbanned") {
+    throw Error("This user cant be unbanned because the account is not verified");
+  }
+
+  if (user.account_status === "verified" && newStatus === "unbanned") {
+    throw Error("This user cant be unbanned because the account is not banned");
+  }
+
+  if (user.account_status === "banned" && newStatus === "verified") {
+    throw Error("This user cant be verified because the account is banned");
+  }
+
+  user.account_status = newStatus;
+  await user.save();
+
+  return user;
 };
 
 export default mongoose.model('user', userSchema);

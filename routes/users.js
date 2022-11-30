@@ -9,6 +9,9 @@ router.get("/", userController.getUsers);
 // Get current user
 router.get("/:username", userController.getUser);
 
+// Change user status
+router.patch("/:username", userController.updateUserStatus);
+
 // Login
 router.post("/login", userController.loginUser);
 

@@ -16,7 +16,7 @@ const connection_url = process.env.URI;
 app.use(express.json());
 app.use(cors());
 app.use("/books", bookRoutes);
-app.use("/user", userRoutes);
+app.use("/users", userRoutes);
 app.use("/histories", historyRoutes);
 
 // DB config
