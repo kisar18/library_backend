@@ -127,7 +127,7 @@ const returnBook = async (req, res) => {
   }
 };
 
-// Verify user
+// Change user status
 const updateUserStatus = async (req, res) => {
   const { username, newStatus } = req.body;
 
@@ -141,6 +141,22 @@ const updateUserStatus = async (req, res) => {
   }
 };
 
+// Change user status
+const editUser = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const user = await User.findOneAndUpdate({ username: username }, {
+      ...req.body
+    }, { new: true });
+
+    res.status(200).json(user);
+  }
+  catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 export default {
-  getUsers, getUser, loginUser, registerUser, borrow, returnBook, updateUserStatus
+  getUsers, getUser, loginUser, registerUser, borrow, returnBook, updateUserStatus, editUser
 };

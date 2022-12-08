@@ -10,7 +10,10 @@ router.get("/", userController.getUsers);
 router.get("/:username", userController.getUser);
 
 // Change user status
-router.patch("/:username", userController.updateUserStatus);
+//router.put("/:username", userController.updateUserStatus);
+
+// Edit user
+router.patch("/:username", userController.editUser);
 
 // Login
 router.post("/login", userController.loginUser);
