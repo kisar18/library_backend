@@ -83,12 +83,16 @@ userSchema.statics.borrow = async function (username, _id) {
   const user = await this.findOne({ username });
   const book = await Book.findById({ _id });
 
+  if (!user) {
+    throw Error("User doesnt exist");
+  }
+
   if (user.books.length === 6) {
     throw Error("Maximum of borrowed books is 6");
   }
 
   if (book.quantity === 0) {
-    throw Error("This book is no available right now");
+    throw Error("This book is not available right now");
   }
 
   for (let i = 0; i < user.books.length; i++) {

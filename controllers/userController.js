@@ -12,7 +12,7 @@ const getUsers = async (req, res) => {
   try {
     const q = req.query.q;
 
-    const search = q ? {
+    const search = q && q.length >= 3 ? {
       "$or": [
         { username: { $regex: q, $options: "$i" } },
         { first_name: { $regex: q, $options: "$i" } },

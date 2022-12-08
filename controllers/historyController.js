@@ -6,7 +6,7 @@ const getHistory = async (req, res) => {
   try {
     const q = req.query.q;
 
-    const search = q ? {
+    const search = q && q.length >= 3 ? {
       "$or": [
         { user: { $regex: q, $options: "$i" } },
         { book: { $regex: q, $options: "$i" } }

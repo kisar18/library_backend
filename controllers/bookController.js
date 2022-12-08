@@ -8,7 +8,7 @@ const getBooks = async (req, res) => {
   try {
     const q = req.query.q;
 
-    const search = q ? {
+    const search = q && q.length >= 3 ? {
       "$or": [
         { name: { $regex: q, $options: "$i" } },
         { author: { $regex: q, $options: "$i" } }
