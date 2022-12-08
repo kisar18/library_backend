@@ -62,7 +62,7 @@ userSchema.statics.login = async function (username, password) {
   }
 
   if (user.account_status === "waiting") {
-    throw Error(`Account ${user.username} is waiting for verification by admin`);
+    throw Error(`Account ${user.username} is waiting for verification by admin, because this account is new or edited`);
   }
 
   if (user.account_status === "banned") {
