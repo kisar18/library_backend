@@ -5,7 +5,7 @@ import Book from "./bookModel.js";
 const userSchema = mongoose.Schema({
   first_name: String,
   last_name: String,
-  birth_number: Number,
+  birth_number: String,
   address: String,
   username: String,
   password: String,
@@ -14,7 +14,7 @@ const userSchema = mongoose.Schema({
     name: String,
     author: String,
     pages: Number,
-    publication_year: Number,
+    publication_year: String,
     image: String,
   }]
 });

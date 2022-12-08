@@ -16,14 +16,17 @@ const getUsers = async (req, res) => {
       "$or": [
         { username: { $regex: q, $options: "$i" } },
         { first_name: { $regex: q, $options: "$i" } },
-        { last_name: { $regex: q, $options: "$i" } }
+        { last_name: { $regex: q, $options: "$i" } },
+        { address: { $regex: q, $options: "$i" } },
+        { birth_number: { $regex: q, $options: "$i" } }
       ]
     } : {};
 
     const PAGESIZE = parseInt(req.query.ps) || "5";
     const page = parseInt(req.query.page) || "0";
+    const sortCategory = req.query.s || "";
 
-    const users = await User.find(search).limit(PAGESIZE).skip(PAGESIZE * page);
+    const users = await User.find(search).limit(PAGESIZE).skip(PAGESIZE * page).sort(sortCategory);;
     const total = (await User.find(search)).length;
     res.status(200).json({ PAGESIZE, total, users });
   }
@@ -51,8 +54,6 @@ const getUser = async (req, res) => {
     for (let i = (PAGESIZE * page); i < PAGESIZE - (PAGESIZE - (total % PAGESIZE)); i++) {
       books[i] = user.books[i];
     }
-
-    //const books = await user.books.limit(PAGESIZE).skip(PAGESIZE * page);
 
     res.status(200).json({ user, books, total });
   }

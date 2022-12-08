@@ -11,14 +11,16 @@ const getBooks = async (req, res) => {
     const search = q && q.length >= 3 ? {
       "$or": [
         { name: { $regex: q, $options: "$i" } },
-        { author: { $regex: q, $options: "$i" } }
+        { author: { $regex: q, $options: "$i" } },
+        { publication_year: { $regex: q, $options: "$i" } }
       ]
     } : {};
 
     const PAGESIZE = parseInt(req.query.ps) || "5";
     const page = parseInt(req.query.page) || "0";
+    const sortCategory = req.query.s || "";
 
-    const books = await Book.find(search).limit(PAGESIZE).skip(PAGESIZE * page);
+    const books = await Book.find(search).limit(PAGESIZE).skip(PAGESIZE * page).sort(sortCategory);
     const total = (await Book.find(search)).length;
 
     res.status(200).json({ PAGESIZE, total, books });
@@ -138,6 +140,10 @@ const deleteBook = async (req, res) => {
   try {
     const users = await User.find({ 'books.0': { $exists: true } });
 
+    if (users.length > 0) {
+      return res.status(400).json({ error: 'You cant delete book which is borrowed by some user' });
+    }
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ error: 'No such book', id });
     }
@@ -146,22 +152,6 @@ const deleteBook = async (req, res) => {
 
     if (!book) {
       return res.status(400).json({ error: 'No such book', id });
-    }
-
-    const bookName = book.name;
-
-    var bookToReturn;
-    for (let i = 0; i < users.length; i++) {
-      for (let j = 0; j < users[i].books.length; j++) {
-        if (bookName === users[i].books[j].name) {
-          bookToReturn = users[i].books[j];
-        }
-      }
-
-      if (bookToReturn) {
-        await users[i].books.remove(bookToReturn);
-        await users[i].save();
-      }
     }
 
     res.status(200).json(book);
