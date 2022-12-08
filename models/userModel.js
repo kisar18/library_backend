@@ -97,7 +97,7 @@ userSchema.statics.borrow = async function (username, _id) {
 
   for (let i = 0; i < user.books.length; i++) {
     if (user.books[i].name === book.name) {
-      throw Error("You already borrowed this book");
+      throw Error("This account already borrowed this book");
     }
   }
 
