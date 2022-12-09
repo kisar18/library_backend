@@ -9,4 +9,10 @@ router.get("/", historyController.getHistory);
 // Update history of borrows
 router.post("/", historyController.createHistoryItem);
 
+// Check history of borrows
+router.get("/checkHistory", historyController.checkBorrows);
+
+// Get history item
+router.patch("/historyItem", historyController.updateHistoryItem);
+
 export default router;

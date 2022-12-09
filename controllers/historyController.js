@@ -1,5 +1,6 @@
 import History from "../models/historyModel.js";
 import Book from "../models/bookModel.js";
+import userController from "./userController.js";
 
 // Get history of borrows
 const getHistory = async (req, res) => {
@@ -34,7 +35,52 @@ const createHistoryItem = async (req, res) => {
     const book = await Book.findById(bookId);
     const bookName = book.name;
 
-    const historyItem = await History.create({ user, book: bookName });
+    let exDate = new Date();
+    exDate.setDate(exDate.getDate() + 6);
+
+    const historyItem = await History.create({ user, book: bookName, expiration_date: exDate, returned: false });
+    res.status(200).json(historyItem);
+  }
+  catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Update history of borrows
+const checkBorrows = async (req, res) => {
+  try {
+
+    let exDate = new Date();
+    exDate.setDate(exDate.getDate() - 6);
+
+    const historyItems = await History.find({ returned: false });
+    let notValid = [];
+    let i = 0;
+
+    historyItems.forEach(item => {
+      if (item.createdAt < exDate) {
+        notValid[i] = item;
+        i++;
+        userController.returnBook(item.user, item.book);
+      }
+    });
+
+    res.status(200).json({ historyItems, exDate, notValid });
+  }
+  catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Get single history item
+const updateHistoryItem = async (req, res) => {
+  const { user, book } = req.body;
+
+  try {
+    const historyItem = await History.findOneAndUpdate({ user: user, book: book, returned: false },
+      { returned: true },
+      { new: true });
+
     res.status(200).json(historyItem);
   }
   catch (error) {
@@ -43,5 +89,5 @@ const createHistoryItem = async (req, res) => {
 };
 
 export default {
-  getHistory, createHistoryItem
+  getHistory, createHistoryItem, checkBorrows, updateHistoryItem
 };
