@@ -80,7 +80,7 @@ const updateHistoryItem = async (req, res) => {
   const { user, book } = req.body;
 
   try {
-    const historyItem = await History.updateHistoryItem(user, book);
+    const historyItem = await History.updateItem(user, book);
 
     res.status(200).json(historyItem);
   }
