@@ -1,6 +1,6 @@
 import History from "../models/historyModel.js";
 import Book from "../models/bookModel.js";
-import userController from "./userController.js";
+import User from "../models/userModel.js";
 
 // Get history of borrows
 const getHistory = async (req, res) => {
@@ -61,7 +61,10 @@ const checkBorrows = async (req, res) => {
       if (item.createdAt < exDate) {
         notValid[i] = item;
         i++;
-        userController.returnBook(item.user, item.book);
+
+        User.returnBook(item.user, item.book);
+
+        History.updateItem(item.user, item.book);
       }
     });
 
@@ -77,9 +80,7 @@ const updateHistoryItem = async (req, res) => {
   const { user, book } = req.body;
 
   try {
-    const historyItem = await History.findOneAndUpdate({ user: user, book: book, returned: false },
-      { returned: true },
-      { new: true });
+    const historyItem = await History.updateHistoryItem(user, book);
 
     res.status(200).json(historyItem);
   }

@@ -16,7 +16,8 @@ const userSchema = mongoose.Schema({
     pages: Number,
     publication_year: String,
     image: String,
-    expiration_date: Date
+    expiration_date: Date,
+    returned: Boolean
   }]
 });
 
@@ -111,7 +112,8 @@ userSchema.statics.borrow = async function (username, _id) {
     pages: book.pages,
     publication_year: book.publication_year,
     image: book.image,
-    expiration_date: exDate
+    expiration_date: exDate,
+    returned: false
   });
 
   book.quantity = book.quantity - 1;
