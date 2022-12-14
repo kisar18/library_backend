@@ -75,6 +75,12 @@ const createBook = async (req, res) => {
     return res.status(400).json({ error: 'Please fill in all the fields', emptyFields, name });
   }
 
+  if (!image.startsWith("https://covers.openlibrary.org/b/isbn/")) {
+    return res.status(400).json({
+      error: 'Image of the book must be URL from Open Library with ISBN code of the book (https://covers.openlibrary.org/b/isbn/9513114724-S.jpg)'
+    });
+  }
+
   try {
     const book = await Book.create({ name, author, publication_year, pages, image, quantity });
     res.status(200).json(book);
