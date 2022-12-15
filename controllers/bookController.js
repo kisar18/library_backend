@@ -146,10 +146,6 @@ const deleteBook = async (req, res) => {
   try {
     const users = await User.find({ 'books.0': { $exists: true } });
 
-    if (users.length > 0) {
-      return res.status(400).json({ error: 'You cant delete book which is borrowed by some user' });
-    }
-
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ error: 'No such book', id });
     }
@@ -158,6 +154,15 @@ const deleteBook = async (req, res) => {
 
     if (!book) {
       return res.status(400).json({ error: 'No such book', id });
+    }
+
+    for (let i = 0; i < users.length; i++) {
+      var u = users[i];
+      for (let j = 0; j < u.books.length; j++) {
+        if (u.books[j].name == book.name) {
+          return res.status(400).json({ error: 'You cant delete book which is borrowed by some user' });
+        }
+      }
     }
 
     res.status(200).json(book);
